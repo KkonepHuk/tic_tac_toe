@@ -1,27 +1,22 @@
+#объявление необходимых переменных
+turn1 = ''
+flag = True
+counter = 0
+game_board = list(range(1, 10))
+
+
+#главный цикл
 def main():
-    game_board = list(range(1, 10))
+    global counter
+    global flag
+
     create_board(game_board)
-    counter = 0
-    while True:
-        move_O(game_board)
-        counter += 1
-        if check_combinations(game_board):
-            print(f'Победил {check_combinations(game_board)}')
-            break
-        elif counter == 9:
-            print('Ничья')
-            break
-
-        move_X(game_board)
-        counter += 1
-        if check_combinations(game_board):
-            print(f'Победил {check_combinations(game_board)}')
-            break
-        elif counter == 9:
-            print('Ничья')
-            break
+    while flag:
+        move(game_board)
+        result()
 
 
+#отрисовка поля
 def create_board(game_board):
     print('', game_board[0], '|', game_board[1], '|', game_board[2])
     print('---|---|---')
@@ -30,12 +25,21 @@ def create_board(game_board):
     print('', game_board[6], '|', game_board[7], '|', game_board[8])
 
 
-def move_O(game_board):
+#выполнение хода
+def move(game_board):
+    global turn1
+
     while True:
         try:
-            move = int(input('Введите номер клетки, на которую хотите совершить ход O: ')) - 1
+            if turn1 == 'X':
+                turn1, turn2 = 'O', 'X'
+                m1, m2 = 'Введите номер клетки, на которую хотите совершить ход O: ', 'Введите номер клетки, на которую хотите совершить ход X: '
+            else:
+                turn2, turn1 = 'O', 'X'
+                m2, m1 = 'Введите номер клетки, на которую хотите совершить ход O: ', 'Введите номер клетки, на которую хотите совершить ход X: '
+            move = int(input(m1)) - 1
             if move in range(9) and str(game_board[move]) not in 'XO':
-                game_board[move] = 'O'
+                game_board[move] = turn1
                 break
             else:
                 print('Недопустимый ввод, попробуйте еще раз!')
@@ -44,20 +48,7 @@ def move_O(game_board):
     create_board(game_board)
 
 
-def move_X(game_board):
-    while True:
-        try:
-            move = int(input('Введите номер клетки, на которую хотите совершить ход X: ')) - 1
-            if move in range(9) and str(game_board[move]) not in 'XO':
-                game_board[move] = 'X'
-                break
-            else:
-                print('Недопустимый ввод, попробуйте еще раз!')
-        except ValueError as e:
-            print('Недопустимый ввод, попробуйте еще раз!', e)
-    create_board(game_board)
-
-
+#проверка комбинаций на итог партии
 def check_combinations(game_board):
     # По горизонтали
     for i in range(0, 9, 3):
@@ -71,6 +62,20 @@ def check_combinations(game_board):
     if game_board[0] == game_board[4] == game_board[8] or game_board[2] == game_board[4] == game_board[6]:
         return game_board[4]
     return False
+
+
+#объявление победителя
+def result():
+    global flag
+    global counter
+
+    counter += 1
+    if check_combinations(game_board):
+        print(f'Победил {check_combinations(game_board)}')
+        flag = False
+    elif counter == 9:
+        print('Ничья')
+        flag = False
 
 
 main()
